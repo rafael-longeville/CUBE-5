@@ -1,0 +1,21 @@
+version: "3"
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: videgrenier
+      MYSQL_ROOT_PASSWORD: videgrenier1234
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: videgrenier1234
+    ports:
+      - "8080:80"
+volumes:
+  myvolume:
