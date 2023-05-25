@@ -29,5 +29,7 @@ services:
       - ./public/.htaccess:/var/www/html/.htaccess
     depends_on:
       - db
+    command: >
+     sh -c "composer install && apache2-foreground"
 volumes:
   myvolume:
