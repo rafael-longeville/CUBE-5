@@ -1,44 +1,24 @@
-FROM nginx:latest
+FROM php:apache
 
-RUN rm -rf node-modules
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Copy Nginx configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-RUN rm /etc/nginx/conf.d/default.conf
+# Set working directory
+WORKDIR /var/www/html
 
-# Install PHP and related extensions
-RUN apt-get update && \
-    apt-get install -y \
-    php7.4 \
-    php7.4-fpm \
-    php7.4-mysql \
-    php7.4-gd \
-    php7.4-curl \
-    php7.4-mbstring \
-    php7.4-xml \
-    php7.4-zip \
-    php7.4-intl
+COPY composer.json .
 
-# Install Composer
-COPY ./composer.json .
-COPY ./composer.lock .
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY package.json .
+COPY package-lock.json .
+
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN set -eux
 RUN composer install
 
-# Install Node.js and NPM
-COPY ./package.json .
-COPY ./package-lock.json .
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs
-RUN npm install
-RUN npm run watch
-
-
 # Copy application files to container
-COPY . /var/www/html
+COPY . .
 
-# Expose ports
-EXPOSE 80
-
-# Start Nginx and PHP-FPM
-CMD service php7.4-fpm start && nginx -g "daemon off;"
+RUN a2enmod rewrite
+CMD ["apache2-foreground"]

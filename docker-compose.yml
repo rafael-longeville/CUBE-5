@@ -1,15 +1,5 @@
 version: "3"
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8081:81"
-    volumes:
-      - ./web:/var/www/html
-    depends_on:
-      - db
   db:
     image: mysql
     environment:
@@ -27,5 +17,17 @@ services:
       PMA_PASSWORD: videgrenier1234
     ports:
       - "8080:80"
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./public/index.php:/var/www/html
+      - ./public/.htaccess:/var/www/html/.htaccess
+    depends_on:
+      - db
 volumes:
   myvolume:
