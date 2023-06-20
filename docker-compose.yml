@@ -6,16 +6,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # image: vide-grenier
     ports:
       - "3000:80"
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
       - ./public:/var/www/html/public
-      # - ./public/index.php:/var/www/html/index.php
       - ./public/.htaccess:/var/www/html/.htaccess
-      # - ./composer.json:/var/www/html/composer.json
     depends_on:
       - db
     environment:
