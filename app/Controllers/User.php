@@ -95,9 +95,9 @@ class User extends \Core\Controller
         }
     }
 
-    private function login($data){
+    private function login($data) {
         try {
-            if(!isset($data['email'])){
+            if (!isset($data['email'])) {
                 throw new Exception('TODO');
             }
 
