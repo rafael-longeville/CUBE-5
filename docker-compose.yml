@@ -1,0 +1,55 @@
+version: "3"
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./public:/var/www/html/public
+      - ./public/.htaccess:/var/www/html/.htaccess
+    depends_on:
+      - db
+    environment:
+      MYSQL_HOST: db
+      MYSQL_USER: webapplication
+      MYSQL_DB: videgrenierenligne
+      MYSQL_PASSWORD: 653rag9T
+    command: >
+      sh -c "composer install && apache2-foreground"
+
+  db:
+    image: mysql:8.0.3
+    container_name: db
+    environment:
+      MYSQL_DATABASE: videgrenierenligne
+      MYSQL_USER: webapplication
+      MYSQL_DB: videgrenierenligne
+      MYSQL_PASSWORD: 653rag9T
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./sql/import.sql:/docker-entrypoint-initdb.d/import.sql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8081:80
+volumes:
+  dbdata:

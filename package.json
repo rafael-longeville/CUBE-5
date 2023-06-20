@@ -5,11 +5,14 @@
   "main": "index.js",
   "scripts": {
     "watch": "node-sass -w style -o public/style",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "docker build --tag=vide-grenier .",
+    "start": "npm run build && docker-compose up -d",
+    "dev": "concurrently --kill-others-on-fail \"npm run watch\" \"apache2-foreground\""
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "node-sass": "^4.14.1"
+  "dependencies": {
+    "node-sass": "^9.0.0"
   }
 }
